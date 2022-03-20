@@ -14,6 +14,26 @@ const handleListen = () => console.log("Listening on 'http://localhost:3000'");
 const httpServer = http.createServer(app);
 const ioServer = SocketIO(httpServer);
 
+const publicRooms = () => {
+  const {
+    sockets: {
+      adapter: { sids, rooms },
+    },
+  } = ioServer;
+  const publicRooms = [];
+  rooms.forEach((_, key) => {
+    if (sids.get(key) === undefined) {
+      publicRooms.push(key);
+    }
+  });
+
+  return publicRooms;
+};
+
+const countUsers = (roomName) => {
+  return ioServer.sockets.adapter.rooms.get(roomName)?.size;
+};
+
 ioServer.on("connection", (socket) => {
   socket["nickname"] = "";
 
@@ -21,13 +41,18 @@ ioServer.on("connection", (socket) => {
     socket["nickname"] = nickname;
     socket.join(roomName);
     done();
-    socket.to(roomName).emit("welcome", socket.nickname);
+    socket.to(roomName).emit("welcome", socket.nickname, countUsers(roomName));
+    ioServer.sockets.emit("room_change", publicRooms());
   });
 
   socket.on("disconnecting", () => {
     socket.rooms.forEach((room) =>
-      socket.to(room).emit("bye", socket.nickname)
+      socket.to(room).emit("bye", socket.nickname, countUsers(room))
     );
+  });
+
+  socket.on("disconnect", () => {
+    ioServer.sockets.emit("room_change", publicRooms());
   });
 
   socket.on("new_message", (message, room, done) => {
