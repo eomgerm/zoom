@@ -15,8 +15,19 @@ const httpServer = http.createServer(app);
 const ioServer = SocketIO(httpServer);
 
 ioServer.on("connection", (socket) => {
-  socket.on("enter_room", (msg) => {
-    console.log(msg);
+  socket.on("enter_room", (roomName, done) => {
+    socket.join(roomName);
+    done();
+    socket.to(roomName).emit("welcome");
+  });
+
+  socket.on("disconnecting", () => {
+    socket.rooms.forEach((room) => socket.to(room).emit("bye"));
+  });
+
+  socket.on("new_message", (message, room, done) => {
+    socket.to(room).emit("new_message", message);
+    done();
   });
 });
 
