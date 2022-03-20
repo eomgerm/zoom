@@ -50,7 +50,7 @@ ioServer.on("connection", (socket) => {
   socket.on("enter_room", (roomName, nickname, done) => {
     socket["nickname"] = nickname;
     socket.join(roomName);
-    done();
+    done(countUsers(roomName));
     socket.to(roomName).emit("welcome", socket.nickname, countUsers(roomName));
     ioServer.sockets.emit("room_change", publicRooms());
   });

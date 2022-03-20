@@ -16,11 +16,11 @@ const handleSubmitMessage = (event) => {
   });
 };
 
-const showRoom = () => {
+const showRoom = (counts) => {
   welcome.hidden = true;
   room.hidden = false;
   const h3 = room.querySelector("h3");
-  h3.innerText = `Room ${roomName} ()`;
+  h3.innerText = `Room ${roomName} (${counts})`;
 
   const messageForm = room.querySelector("#message");
   messageForm.addEventListener("submit", handleSubmitMessage);
