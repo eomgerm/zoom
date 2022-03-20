@@ -8,20 +8,7 @@ html(lang="en")
         link(rel="stylesheet", href="https://unpkg.com/mvp.css")
     body 
         header 
-            h1 Hoom!
+            h1 Hoom
         main
-            div#welcome
-                form
-                    input(placeholder="Room Name", required, type="text")#roomName
-                    input(placeholder="Nickname", required, type="text")#nickname
-                    button Enter Room
-                h4 Rooms 
-                    ul  
-            div#room
-                h3
-                ul 
-                form#message
-                    input(placeholder="Enter the message...", required, type="text")
-                    button Send
         script(src="socket.io/socket.io.js")
         script(src="/public/js/app.js") 
